@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>common.log</file>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="SEARCH_RESULT_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>search_results.log</file>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <logger name="com.lotus.edu.imagefinder.ImageFinder.common" level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+    <logger name="com.lotus.edu.imagefinder.ImageFinder.result" level="INFO">
+        <appender-ref ref="SEARCH_RESULT_FILE"/>
+    </logger>
+
+	<root level="INFO" />
+</configuration>
