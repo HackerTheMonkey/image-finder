@@ -27,9 +27,6 @@ public class ImageFinder {
     private static final String CRX_SERVER_USER = "crx.server.user";
     private static final String CRX_SERVER_PASSWORD = "crx.server.password";
 
-    private static final String CONTENT_DAM_PATH = "/content/dam";
-    private static final String FILE_REFERENCE_PROPERTY = "fileReference";
-
     private static final String PAGE_TYPE = "cq:Page";
     private static final String FILE_NODE_QUERY = "/jcr:root/content//element(*, cq:Page)//file";
 
@@ -42,7 +39,6 @@ public class ImageFinder {
     private String user;
     private String password;
 
-    private List<Node> searchNodes = new ArrayList<Node>();
     private List<String> pages = new ArrayList<String>();
 
     public static void main(String[] args) {
@@ -92,21 +88,12 @@ public class ImageFinder {
             NodeIterator nodes = result.getNodes();
             while (nodes.hasNext()) {
                 Node nextNode = (Node) nodes.next();
-                searchNodes.add(nextNode);
-
-                boolean isUploaded = true;
                 Node parentNode = nextNode.getParent();
-
-                if (parentNode.hasProperty(FILE_REFERENCE_PROPERTY)) {
-                    Property fileReference = parentNode.getProperty(FILE_REFERENCE_PROPERTY);
-                    isUploaded = !fileReference.getValue().getString().contains(CONTENT_DAM_PATH);
-                }
-
-                if (isUploaded) {
-                    Node parentPage = getParentPage(parentNode);
-                    if (parentPage != null) {
-                        pages.add(parentPage.getPath());
-                    }
+                Node parentPage = getParentPage(parentNode);
+                if (parentPage != null) {
+                    pages.add(parentPage.getPath());
+                } else {
+                    LOG.warn("No parent page found for {}", nextNode.getPath());
                 }
             }
             LOG.info("Found {} pages with uploaded images", pages.size());
@@ -131,7 +118,9 @@ public class ImageFinder {
             LOG.error("Failed to load connection properties from {}", CRX_SERVER_PROPERTIES);
         } finally {
             try {
-                stream.close();
+                if (stream != null) {
+                    stream.close();
+                }
             } catch (IOException e) {
                 LOG.error("Failed to load connection properties from {}", CRX_SERVER_PROPERTIES);
             }
