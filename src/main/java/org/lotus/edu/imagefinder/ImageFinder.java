@@ -60,8 +60,8 @@ public class ImageFinder {
         queryString = props.getProperty(FILE_NODE_QUERY);
         validate(FILE_NODE_QUERY, queryString);
 
-        LOG.info("Loaded crx server connection properties");
-        LOG.info("Connection uri [{}]", crxServerUri);
+        LOG.debug("Loaded crx server connection properties");
+        LOG.debug("Connection uri [{}]", crxServerUri);
     }
 
     private void validate(String paramName, String paramValue) {
@@ -78,7 +78,7 @@ public class ImageFinder {
         try {
             repository = JcrUtils.getRepository(crxServerUri);
             session = repository.login(new SimpleCredentials(user, password.toCharArray()));
-            LOG.info("Connected to the crx server..");
+            LOG.debug("Connected to the crx server..");
 
             QueryManager queryManager = session.getWorkspace().getQueryManager();
             Query query = queryManager.createQuery(queryString, Query.XPATH);
@@ -103,8 +103,8 @@ public class ImageFinder {
                 }
             }
 
-            LOG.info("Found {} pages with uploaded images", pages.size());
-            RESULTS_LOG.info("Found {} total pages", pages.size());
+            LOG.debug("Found {} pages with uploaded images", pages.size());
+            RESULTS_LOG.debug("Found {} total pages", pages.size());
 
         } catch (RepositoryException e) {
             LOG.error("Repository error", e);
@@ -117,7 +117,7 @@ public class ImageFinder {
     }
 
     private void printPaths(Node currentNode, Node parentPage) throws RepositoryException {
-        LOG.info("Found {} image file in {}", currentNode.getPath(), parentPage.getName());
+        LOG.info("{},{}", currentNode.getPath(), parentPage.getName());
     }
 
     private static Properties loadConnectionProperties() {
