@@ -1,4 +1,4 @@
-package org.lotus.edu.imagefinder;
+package com.akqa.navitas;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
