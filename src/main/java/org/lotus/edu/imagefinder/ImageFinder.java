@@ -1,4 +1,4 @@
-package com.lotus.edu.imagefinder;
+package org.lotus.edu.imagefinder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;

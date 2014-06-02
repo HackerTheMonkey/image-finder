@@ -20,11 +20,11 @@
         </layout>
     </appender>
 
-    <logger name="com.lotus.edu.imagefinder.ImageFinder.common" level="INFO">
+    <logger name="org.lotus.edu.imagefinder.ImageFinder.common" level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>
-    <logger name="com.lotus.edu.imagefinder.ImageFinder.result" level="INFO">
+    <logger name="org.lotus.edu.imagefinder.ImageFinder.result" level="INFO">
         <appender-ref ref="SEARCH_RESULT_FILE"/>
     </logger>
 
