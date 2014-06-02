@@ -88,7 +88,7 @@ public class ImageFinder {
             Query query = queryManager.createQuery(FILE_NODE_QUERY, Query.XPATH);
 
             QueryResult result = query.execute();
-            LOG.error("Executed {} query [{}]", query.getLanguage(), query.getStatement());
+            LOG.info("Executed {} query [{}]", query.getLanguage(), query.getStatement());
             NodeIterator nodes = result.getNodes();
             while (nodes.hasNext()) {
                 Node nextNode = (Node) nodes.next();
