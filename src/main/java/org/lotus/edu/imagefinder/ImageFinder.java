@@ -27,17 +27,14 @@ public class ImageFinder {
     private static final String CRX_SERVER_USER = "crx.server.user";
     private static final String CRX_SERVER_PASSWORD = "crx.server.password";
 
-    private static final String PAGE_TYPE = "cq:Page";
-    private static final String FILE_NODE_QUERY = "/jcr:root/content//element(*, cq:Page)//file";
+    private static final String FILE_NODE_QUERY = "file.node.queryString";
 
-    /**
-     * JCR-SQL2 query
-     * SELECT * FROM [cq:Page] AS s WHERE ISDESCENDANTNODE([/content]) and CONTAINS(s.*,'file')";
-     */
+    private static final String PAGE_TYPE = "cq:Page";
 
     private String crxServerUri;
     private String user;
     private String password;
+    private String queryString;
 
     private List<String> pages = new ArrayList<String>();
 
@@ -60,6 +57,9 @@ public class ImageFinder {
         password = props.getProperty(CRX_SERVER_PASSWORD);
         validate(CRX_SERVER_PASSWORD, password);
 
+        queryString = props.getProperty(FILE_NODE_QUERY);
+        validate(FILE_NODE_QUERY, queryString);
+
         LOG.info("Loaded crx server connection properties");
         LOG.info("Connection uri [{}]", crxServerUri);
     }
@@ -81,23 +81,31 @@ public class ImageFinder {
             LOG.info("Connected to the crx server..");
 
             QueryManager queryManager = session.getWorkspace().getQueryManager();
-            Query query = queryManager.createQuery(FILE_NODE_QUERY, Query.XPATH);
+            Query query = queryManager.createQuery(queryString, Query.XPATH);
 
             QueryResult result = query.execute();
-            LOG.info("Executed {} query [{}]", query.getLanguage(), query.getStatement());
+            LOG.info("Executed {} queryString [{}]", query.getLanguage(), query.getStatement());
+
             NodeIterator nodes = result.getNodes();
+
             while (nodes.hasNext()) {
-                Node nextNode = (Node) nodes.next();
-                Node parentNode = nextNode.getParent();
-                Node parentPage = getParentPage(parentNode);
+
+                Node currentNode = (Node) nodes.next();
+                Node immediateParentNode = currentNode.getParent();
+                Node parentPage = getParentPage(immediateParentNode);
+
                 if (parentPage != null) {
                     pages.add(parentPage.getPath());
+                    printPaths(currentNode, parentPage);
+
                 } else {
-                    LOG.warn("No parent page found for {}", nextNode.getPath());
+                    LOG.warn("No parent page found for {}", currentNode.getPath());
                 }
             }
+
             LOG.info("Found {} pages with uploaded images", pages.size());
             RESULTS_LOG.info("Found {} total pages", pages.size());
+
         } catch (RepositoryException e) {
             LOG.error("Repository error", e);
         } finally {
@@ -106,6 +114,10 @@ public class ImageFinder {
             }
         }
 
+    }
+
+    private void printPaths(Node currentNode, Node parentPage) throws RepositoryException {
+        LOG.info("Found {} image file in {}", currentNode.getPath(), parentPage.getName());
     }
 
     private static Properties loadConnectionProperties() {
